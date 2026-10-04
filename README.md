@@ -50,11 +50,15 @@ README.md          Este archivo
 ## Flujo de trabajo
 
 ### Ramas
-- `main`: versión estable del proyecto.
+- `main`: versiones estables del proyecto. Solo recibe cambios desde `Develop`.
 - `Develop`: integración de los avances del equipo.
 - `Baltazar`, `Pablo`, `Gean` y `Luis`: ramas personales de cada integrante.
 
-Cada integrante trabaja en su rama, trae los cambios de `Develop` con `git merge origin/Develop` y los cambios se integran mediante pull request, revisado por al menos otro integrante.
+Flujo:
+
+1. Cada integrante trabaja en su rama personal y trae los cambios de `Develop` con `git merge origin/Develop`.
+2. Los avances se integran a `Develop` mediante pull request, revisado por al menos otro integrante. Al fusionar se usa **Create a merge commit** (no *Squash*), para conservar los commits de cada integrante.
+3. `Develop` se integra a `main` mediante un pull request por cada versión (por ejemplo, `release: v0.2.0`), y luego se crea el tag de esa versión sobre `main`.
 
 ### Mensajes de commit
 Se usa la convención de Angular: `tipo(ámbito): descripción`. La descripción va en imperativo, con la primera letra en minúscula y sin punto final. El ámbito es opcional.
