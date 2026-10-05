@@ -18,7 +18,7 @@ Notas sobre el pack:
 
 | Asset | Autor | Origen | Ubicación |
 |---|---|---|---|
-| Arte conceptual (vista en primera persona, protagonista y enemigos) | Equipo Goty Devs | Dibujos originales | `Assets/Arte/Concepto/` |
+| Arte conceptual (vista en primera persona, protagonista, enemigos y escena conceptual) | Equipo Goty Devs | Dibujos originales | `Assets/Arte/Concepto/` |
 | Degradado del menú | Equipo Goty Devs | Generado con código | `Assets/Arte/Interfaz/` |
 | Materiales de la escena del sótano | Equipo Goty Devs | Creados en Unity | `Assets/Arte/Materiales/` |
 | Música de ambiente del menú (`ambiente_menu.wav`) | Equipo Goty Devs | Generada con código (síntesis); **provisoria** | `Assets/Audio/Musica/` |
