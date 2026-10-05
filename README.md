@@ -1,3 +1,6 @@
+<h1 font=UnifrakturMaguntia>
+   Proyecto PPA   
+</h1>
 # Proyecto PPA
 
 Videojuego de horror psicológico en primera persona, ambientado en un sótano cuyos niveles se vuelven cada vez más grotescos a medida que el jugador desciende. El jugador usa armas con munición limitada, gestiona su estamina y su inventario, y enfrenta enemigos y un jefe final. No hay HUD: el estado del personaje se comunica con efectos visuales y sonoros.
