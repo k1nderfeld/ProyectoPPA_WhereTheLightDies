@@ -1439,7 +1439,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af4e684cb0d96ab4e84ab6c89807ec1b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MenuPrincipal
-  escenaJuego: Sotano_Conceptual
+  escenaJuego: Sotano_Jugable
   panelPrincipal: {fileID: 1334552711}
   panelOpciones: {fileID: 1175511869}
   panelCreditos: {fileID: 1837003401}

@@ -8,7 +8,7 @@ using UnityEngine.UI;
 public class MenuPrincipal : MonoBehaviour
 {
     [Header("Escena del juego")]
-    public string escenaJuego = "Sotano_Conceptual";
+    public string escenaJuego = "Sotano_Jugable";
 
     [Header("Paneles")]
     public GameObject panelPrincipal;
