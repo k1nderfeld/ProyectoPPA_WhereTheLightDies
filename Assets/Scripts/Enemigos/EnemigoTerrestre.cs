@@ -12,7 +12,7 @@ public class EnemigoTerrestre : MonoBehaviour
     [SerializeField] private int cantidadRayos = 10;
     private NavMeshAgent patrullaje;
     Transform jugador;
-    Salud saludJugador;
+    Protagonista protagonista;
     [SerializeField] private float salud = 50f;
     [SerializeField] private Transform cabeza;
 
@@ -26,11 +26,11 @@ public class EnemigoTerrestre : MonoBehaviour
     {
         // se obtiene el agente que contra al enemigo
         patrullaje = GetComponent<NavMeshAgent>(); 
-        // busca un jugador si tiene el atrubuto salud;  
-        saludJugador=FindFirstObjectByType<Salud>();
+        // busca al protagonista en la escena
+        protagonista = FindAnyObjectByType<Protagonista>();
         // guarda la posibilidad de cambiar la salud del jugador solo si existe
-        if(saludJugador!=null){
-            jugador=saludJugador.transform;
+        if(protagonista!=null){
+            jugador=protagonista.transform;
 
         }
         //Calcula todos los puntos patrullables

@@ -3628,8 +3628,6 @@ GameObject:
   - component: {fileID: 1295173060}
   - component: {fileID: 1295173061}
   - component: {fileID: 1295173062}
-  - component: {fileID: 1295173064}
-  - component: {fileID: 1295173063}
   m_Layer: 0
   m_Name: Jugador
   m_TagString: Untagged
@@ -3708,42 +3706,6 @@ MonoBehaviour:
   camara: {fileID: 1902020652}
   gradosPorPixel: 0.1
   limiteVertical: 85
---- !u!114 &1295173063
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1295173058}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4f44598d0579cef48b7475c057a674a9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Estamina
-  estaminaMaxima: 100
-  gastoPorSegundo: 20
-  recuperacionPorSegundo: 15
-  esperaRecuperacion: 2
-  minimoParaCorrer: 0.2
-  estaminaActual: 0
---- !u!114 &1295173064
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1295173058}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4f44598d0579cef48b7475c057a674a9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Estamina
-  estaminaMaxima: 100
-  gastoPorSegundo: 20
-  recuperacionPorSegundo: 15
-  esperaRecuperacion: 2
-  minimoParaCorrer: 0.2
-  estaminaActual: 0
 --- !u!1 &1322971472
 GameObject:
   m_ObjectHideFlags: 0
