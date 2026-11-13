@@ -1,0 +1,122 @@
+@startuml diagrama_clases
+' Diagrama de clases de Goty Devs (versión actualizada por el equipo).
+' Es la fuente editable de docs/diagrama_clases.png. El código debe respetar este diagrama.
+left to right direction
+
+class GameManager {
+  -estadoPartida : EstadoPartida
+  +Iniciar()
+  +Pausar()
+  +Derrota()
+}
+
+class NivelManager {
+  -nivelActual : int
+  +CargarSiguiente()
+  +Reiniciar()
+}
+
+class Protagonista {
+  -saludMaxima : float
+  -saludActual : float
+  -estaminaMaxima : float
+  -estaminaActual : float
+  -velocidadCaminar : float
+  -velocidadCorrer : float
+  -armaEquipada : Arma
+  +Mover()
+  +Correr()
+  +Empujar()
+  +RecibirDanio(danio : float)
+  +RecogerMunicion(tipo : TipoMunicion)
+  +RecargarArma()
+  +EquiparArma(indice : int)
+}
+
+class Inventario {
+  -cantidadSlots : int
+  -slots : Slot[]
+}
+
+class Slot {
+  -arma : Arma
+  -tipoMunicion : TipoMunicion
+  -cantidad : int
+  -reservado : bool
+}
+note bottom of Slot
+  Capacidad por slot (fija):
+  4 cargadores o 18 cartuchos
+end note
+
+abstract class Arma {
+  +danioPorRayo : float
+  +rango : float
+  +cantidadRayosAtaque : int
+  +cadencia : float
+  +tiempoRecarga : float
+  +municionPorCarga : int
+  +municionActual : int
+  +slotsInventario : int
+  +tipoMunicion : TipoMunicion
+  +usar()
+  +sePuedeUsar() : bool
+}
+
+class CuerpoACuerpo
+class Granada {
+  -radio : float
+}
+class Pistola
+class Escopeta
+
+enum TipoMunicion {
+  Cargador
+  Cartucho
+}
+
+abstract class Enemigo {
+  -salud : float
+  -velocidad : float
+  -rangoDeteccion : float
+  -rangoAtaque : float
+  -danio : float
+  +VeAlJugador() : bool
+  +{abstract} Patrullar()
+  +{abstract} Perseguir()
+  +Atacar()
+  +RecibirDanio(danio : float)
+  +Morir()
+  +SoltarMunicion()
+}
+
+class EnemigoTerrestre
+class EnemigoVolador {
+  +MoverPorPared()
+}
+class JefeFinal {
+  +AtaqueEspecial()
+}
+
+GameManager --> Protagonista : controla
+GameManager --> NivelManager : utiliza
+NivelManager --> Enemigo : gestiona
+Enemigo --> Protagonista : ataca
+Enemigo ..> TipoMunicion : suelta
+
+Protagonista *-- Inventario : posee
+Protagonista --> "0..1" Arma : equipa
+Inventario *-- "4" Slot : administra
+Slot --> "0..1" Arma : guarda
+Slot --> TipoMunicion : guarda
+Arma --> TipoMunicion : usa
+
+Arma <|-- CuerpoACuerpo
+Arma <|-- Granada
+Arma <|-- Pistola
+Arma <|-- Escopeta
+
+Enemigo <|-- EnemigoTerrestre
+Enemigo <|-- EnemigoVolador
+Enemigo <|-- JefeFinal
+@enduml
