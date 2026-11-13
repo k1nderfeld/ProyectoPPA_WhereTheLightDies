@@ -13,9 +13,8 @@ Lista de todos los scripts del proyecto, para qué sirve cada uno y dónde se us
 | `SonidoBoton` | `Scripts/Menu` | Hace sonar un botón al pasar el mouse y al hacer clic. | Cada botón |
 | `TextoParpadeo` | `Scripts/Menu` | Hace parpadear un texto como una luz que falla (título). | `Titulo` |
 | `MenuPausa` | `Scripts/Menu` | Pausa el juego con Escape (detiene el tiempo y libera el cursor) y ofrece "Reanudar" y "Volver al menú". | `Canvas_Pausa` |
-| `MovimientoJugador` | `Scripts/Jugador` | Mueve al jugador con W, A, S y D, con gravedad. Corre con Shift si la estamina lo permite. Usa el `CharacterController`. | `Jugador` |
+| `Protagonista` | `Scripts/Jugador` | El personaje del jugador, según el diagrama de clases. Reúne el movimiento con W, A, S y D (con gravedad), correr con Shift, la **estamina** (se gasta al correr, se regenera tras 2 s y, si se agota, no deja correr hasta recuperar el 20 %) y la **salud** (`RecibirDanio`). Usa el `CharacterController`. `Empujar`, `RecogerMunicion`, `RecargarArma` y `EquiparArma` están pendientes (issue #10). | `Jugador` |
 | `CamaraJugador` | `Scripts/Jugador` | Gira la vista con el mouse: izquierda y derecha giran el cuerpo, arriba y abajo giran la cámara (límite de ±85°). Usa la sensibilidad guardada en `Ajustes`. | `Jugador` |
-| `Estamina` | `Scripts/Jugador` | Lleva la estamina: se gasta al correr, se regenera tras 2 s sin correr y, si se agota, no deja correr hasta recuperar el 20 %. | `Jugador` |
 
 ## Scripts de editor
 
@@ -55,6 +54,20 @@ MenuPrincipal.unity
 - `Sotano_Conceptual`: escena generada por script, solo para mostrar el ambiente.
 - `Sotano_Jugable`: copia de la anterior donde el jugador ya se mueve, mira, corre y puede pausar. El botón **Jugar** del menú carga esta escena.
 
+## Clases del diagrama y su estado
+
+El diagrama de clases del equipo está en [`diagrama_clases.png`](diagrama_clases.png) (fuente editable: [`diagrama_clases.puml`](diagrama_clases.puml)). **El código debe respetarlo.**
+
+| Clase del diagrama | Script | Estado |
+|---|---|---|
+| `Protagonista` | `Scripts/Jugador/Protagonista.cs` | Hecha: movimiento, correr, salud y estamina. Faltan `Empujar`, `RecogerMunicion`, `RecargarArma` y `EquiparArma` (#10) |
+| `TipoMunicion` | `Scripts/Armas/TipoMunicion.cs` | Hecha |
+| `Inventario` y `Slot` | `Scripts/Jugador/Inventario.cs` | Esqueleto vacío; `Slot` no existe (#10) |
+| `Arma` y subclases (`CuerpoACuerpo`, `Granada`, `Pistola`, `Escopeta`) | `Scripts/Jugador/Arma.cs` | Esqueleto vacío; las subclases no existen (#10) |
+| `Enemigo` y `EnemigoTerrestre` | `Scripts/Enemigos/EnemigoTerrestre.cs` | En progreso: solo tiene la visión por rayos; no hay clase `Enemigo` base (#11) |
+| `EnemigoVolador` y `JefeFinal` | — | No existen (#11 y #13) |
+| `GameManager` y `NivelManager` | — | No existen (#13) |
+| Munición recogible (no está en el diagrama) | `Scripts/Recogibles/Municion.cs` | Esqueleto vacío |
 ## Pendientes por documentar
 
-- Scripts de armas y enemigos (aún no existen).
+- Scripts del inventario, las armas y los enemigos (hoy son esqueletos).
