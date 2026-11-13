@@ -13,7 +13,7 @@ Lista de todos los scripts del proyecto, para qué sirve cada uno y dónde se us
 | `SonidoBoton` | `Scripts/Menu` | Hace sonar un botón al pasar el mouse y al hacer clic. | Cada botón |
 | `TextoParpadeo` | `Scripts/Menu` | Hace parpadear un texto como una luz que falla (título). | `Titulo` |
 | `MenuPausa` | `Scripts/Menu` | Pausa el juego con Escape (detiene el tiempo y libera el cursor) y ofrece "Reanudar" y "Volver al menú". No se abre mientras el inventario está abierto. | `Canvas_Pausa` |
-| `MenuInventario` | `Scripts/Menu` | Abre y cierra el inventario con **Tab** (RF-09): muestra al protagonista y los 4 slots con sus armas y munición. Mientras está abierto, el juego se detiene. No se abre si el juego está en pausa. | `Canvas_Inventario` |
+| `MenuInventario` | `Scripts/Menu` | Abre y cierra el inventario con **Tab** (RF-09), con estilo de maletín inspirado en Resident Evil 4: los 4 slots dentro del maletín, el protagonista a la derecha y abajo lo que hay en el slot elegido. El slot se elige con flechas, W, A, S, D o con clic. Mientras está abierto, el juego se detiene. No se abre si el juego está en pausa. | `Canvas_Inventario` |
 | `Protagonista` | `Scripts/Jugador` | El personaje del jugador, según el diagrama de clases. Reúne el movimiento con W, A, S y D (con gravedad), correr con Shift, la **estamina** (se gasta al correr, se regenera tras 2 s y, si se agota, no deja correr hasta recuperar el 20 %) y la **salud** (`RecibirDanio`). Usa el `CharacterController`. `Empujar`, `RecogerMunicion`, `RecargarArma` y `EquiparArma` están pendientes (issue #10). | `Jugador` |
 | `CamaraJugador` | `Scripts/Jugador` | Gira la vista con el mouse: izquierda y derecha giran el cuerpo, arriba y abajo giran la cámara (límite de ±85°). Usa la sensibilidad guardada en `Ajustes`. | `Jugador` |
 | `Inventario` | `Scripts/Jugador` | El inventario del protagonista: 4 slots. Agrega munición (primero completa los slots del mismo tipo y después usa slots vacíos), la quita al recargar y la cuenta. En el Inspector se elige con cuánta munición parte el jugador. | `Jugador` |
@@ -28,7 +28,7 @@ Solo funcionan dentro del editor de Unity (no van en el juego compilado). Se eje
 | `CrearMenuPrincipal` | Goty Devs > Crear menú principal | Arma la escena `Escenas/MenuPrincipal` completa (fondo, título, paneles, audio) y la agrega como primera escena de Build Settings. |
 | `CrearEscenaConceptual` | Goty Devs > Crear escena conceptual del sótano | Arma la escena `Escenas/Sotano_Conceptual`: habitación, objetos, luces, ambiente, cámara con pistola, ojos voladores y HUD de prueba. |
 | `CrearMenuPausa` | Goty Devs > Agregar menú de pausa a la escena abierta | Agrega el panel de pausa a la escena que esté abierta (no borra nada) y la agrega a Build Settings. Si ya tiene menú de pausa, no hace nada. |
-| `CrearInventario` | Goty Devs > Agregar inventario a la escena abierta | Agrega el componente `Inventario` al Protagonista (y lo conecta) y la pantalla del inventario (`Canvas_Inventario`). No borra nada. Si ya existe, no hace nada. |
+| `CrearInventario` | Goty Devs > Agregar inventario a la escena abierta | Agrega el componente `Inventario` al Protagonista (y lo conecta) y la pantalla del inventario (`Canvas_Inventario`), con el maletín, la barra superior, el protagonista y la barra inferior. No borra nada más; si la pantalla ya existe, la reemplaza por una nueva. |
 
 > Si se vuelve a ejecutar un script de editor, **reemplaza** la escena que genera. No usarlo sobre una escena a la que ya le hicimos cambios a mano.
 
