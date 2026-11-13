@@ -4570,6 +4570,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93f1b5a6a5e4b7cf08de0cf52d150957, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemigoTerrestre
+  cabeza: {fileID: 1664961480}
 --- !u!1 &1713357582
 GameObject:
   m_ObjectHideFlags: 0
