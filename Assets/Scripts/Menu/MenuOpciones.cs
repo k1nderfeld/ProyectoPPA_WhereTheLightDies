@@ -3,6 +3,7 @@ using UnityEngine.UI;
 
 // Controla la pantalla de opciones: sliders de volumen, sensibilidad y pantalla completa.
 // Cada cambio se guarda en Ajustes y se aplica de inmediato.
+// Se usa en el menú principal y en la pausa del juego (ahí no hay música del menú: audioMenu queda vacío).
 public class MenuOpciones : MonoBehaviour
 {
     public Slider sliderGeneral;
@@ -69,7 +70,10 @@ public class MenuOpciones : MonoBehaviour
 
     void ActualizarTodo()
     {
-        audioMenu.ActualizarVolumenes();
+        if (audioMenu != null)
+            audioMenu.ActualizarVolumenes();        // en el menú: música y efectos del menú
+        else
+            AudioListener.volume = Ajustes.VolumenGeneral; // en el juego: volumen general
         ActualizarTextos();
     }
 
