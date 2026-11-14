@@ -1,9 +1,9 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-// El protagonista del juego: se mueve, corre y tiene salud y estamina.
-// Es la clase "Protagonista" del diagrama de clases (docs/diagrama_clases.png) y reúne lo que
-// antes eran los scripts MovimientoJugador, Estamina y Salud.
+// El protagonista del juego: se mueve, corre, tiene salud y estamina, recoge cosas (E),
+// equipa armas desde el inventario, ataca (clic izquierdo) y recarga (R).
+// Es la clase "Protagonista" del diagrama de clases (docs/diagrama_clases.png).
 // Se agrega al objeto "Jugador". La cámara con el mouse va aparte, en CamaraJugador.
 [RequireComponent(typeof(CharacterController), typeof(Inventario))]
 public class Protagonista : MonoBehaviour
@@ -25,23 +25,37 @@ public class Protagonista : MonoBehaviour
     [SerializeField] private float velocidadCorrer = 5f;              // al menos 1,5 veces la de caminar (RF-03)
     [SerializeField] private float gravedad = -20f;                   // qué tan fuerte cae
 
-    [Header("Inventario y armas (issue #10)")]
+    [Header("Inventario y armas")]
     [SerializeField] private Inventario inventario;                   // el protagonista posee un inventario
     [SerializeField] private Arma armaEquipada;                       // y puede tener un arma equipada
+    [SerializeField] private Transform mano;                          // donde se guardan las armas (hijo de la cámara)
+    [SerializeField] private float distanciaRecoger = 2f;             // RF-10: se recoge a 2 m o menos
 
-    // Otros scripts (enemigos, efectos de pantalla) pueden leer estos datos, pero no cambiarlos
+    // Otros scripts (enemigos, efectos de pantalla, avisos) pueden leer estos datos, pero no cambiarlos
     public bool EstaCorriendo { get; private set; }
     public bool EstaMuerto { get; private set; }
     public float SaludActual { get { return saludActual; } }
     public float SaludMaxima { get { return saludMaxima; } }
     public float EstaminaActual { get { return estaminaActual; } }
     public float EstaminaMaxima { get { return estaminaMaxima; } }
+    public Inventario Inventario { get { return inventario; } }
+    public Transform Mano { get { return mano; } }
+    public Arma ArmaEquipada { get { return armaEquipada; } }
+
+    // Lo más cercano que se puede recoger (null si no hay nada); lo usa el aviso "E  Recoger..."
+    public IRecogible RecogibleCercano { get; private set; }
+
+    // Mensaje corto en pantalla, por ejemplo "No hay espacio en el inventario" (null si no hay)
+    public string Mensaje { get { return Time.time < finMensaje ? mensaje : null; } }
 
     CharacterController controlador;
     Vector2 entradaMovimiento;      // W, A, S y D de este cuadro
     float velocidadVertical;        // velocidad de caída
     float tiempoSinCorrer;
     bool estaminaAgotada;           // true desde que llega a 0 hasta recuperar el mínimo
+    bool juegoDetenidoAntes;        // si en el cuadro anterior el juego estaba en pausa o en el inventario
+    string mensaje;
+    float finMensaje;
 
     void Awake()
     {
@@ -62,6 +76,21 @@ public class Protagonista : MonoBehaviour
         entradaMovimiento = LeerEntrada();
         Correr();
         Mover();
+
+        // En pausa o con el inventario abierto no se ataca ni se recoge. Tampoco en el cuadro en que
+        // se reanuda, para que el clic en "Reanudar" no dispare el arma.
+        bool detenido = Time.timeScale == 0f;
+        bool recienReanudado = juegoDetenidoAntes && !detenido;
+        juegoDetenidoAntes = detenido;
+        if (detenido || recienReanudado) return;
+
+        BuscarRecogibleCercano();
+
+        var mouse = Mouse.current;
+        var teclado = Keyboard.current;
+        if (mouse != null && mouse.leftButton.wasPressedThisFrame && armaEquipada != null) armaEquipada.usar();
+        if (teclado != null && teclado.rKey.wasPressedThisFrame) RecargarArma();
+        if (teclado != null && teclado.eKey.wasPressedThisFrame) Recoger();
     }
 
     // Mueve al protagonista con W, A, S y D (RF-01), con gravedad.
@@ -137,19 +166,61 @@ public class Protagonista : MonoBehaviour
         }
     }
 
-    // Guarda munición en el inventario al recogerla (RF-10). Pendiente: issue #10.
-    public void RecogerMunicion(TipoMunicion tipo)
+    // Guarda una unidad de munición en el inventario (RF-10). Devuelve true si cupo.
+    public bool RecogerMunicion(TipoMunicion tipo)
     {
+        return inventario.AgregarMunicion(tipo, 1) == 0;
     }
 
-    // Recarga el arma equipada con la munición de reserva (RF-15). Pendiente: issue #10.
+    // Recarga el arma equipada con la munición del inventario (RF-15), con la tecla R
     public void RecargarArma()
     {
+        if (armaEquipada != null) armaEquipada.Recargar(inventario);
     }
 
-    // Equipa el arma que está en la posición "indice" del inventario (RF-11). Pendiente: issue #10.
+    // Equipa el arma que está en la posición "indice" del inventario (RF-11): guarda la anterior y saca la nueva
     public void EquiparArma(int indice)
     {
+        Arma arma = inventario.ObtenerSlot(indice).Arma;
+        if (arma == null || arma == armaEquipada) return;
+
+        if (armaEquipada != null) armaEquipada.Mostrar(false);
+        armaEquipada = arma;
+        armaEquipada.Mostrar(true);
+    }
+
+    // Recoge lo que esté cerca con la tecla E (RF-10)
+    void Recoger()
+    {
+        if (RecogibleCercano == null) return;
+        if (!RecogibleCercano.Recoger(this)) MostrarMensaje("No hay espacio en el inventario");
+    }
+
+    // Busca lo más cercano que se pueda recoger, dentro de la distancia permitida
+    void BuscarRecogibleCercano()
+    {
+        RecogibleCercano = null;
+        float menorDistancia = float.MaxValue;
+
+        Collider[] cercanos = Physics.OverlapSphere(transform.position, distanciaRecoger);
+        foreach (Collider cercano in cercanos)
+        {
+            IRecogible recogible = cercano.GetComponentInParent<IRecogible>();
+            if (recogible == null) continue;
+
+            float distancia = Vector3.Distance(transform.position, cercano.transform.position);
+            if (distancia < menorDistancia)
+            {
+                menorDistancia = distancia;
+                RecogibleCercano = recogible;
+            }
+        }
+    }
+
+    void MostrarMensaje(string texto)
+    {
+        mensaje = texto;
+        finMensaje = Time.time + 2f; // se ve durante 2 segundos
     }
 
     // Lee las teclas y devuelve un valor entre -1 y 1 para cada eje

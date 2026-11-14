@@ -4,12 +4,14 @@ using UnityEngine.UI;
 
 // Muestra el inventario con la tecla Tab (RF-09), con estilo de maletín (inspirado en Resident Evil 4):
 // los 4 slots dentro del maletín, el protagonista a la derecha y abajo lo que hay en el slot elegido.
-// El slot se elige con las flechas (o W, A, S, D) o haciendo clic. Mientras está abierto, el juego se detiene.
+// El slot se elige con las flechas (o W, A, S, D) o haciendo clic. Clic en un arma (o Enter) la equipa (RF-11).
+// Mientras está abierto, el juego se detiene.
 // Se agrega al objeto "Canvas_Inventario" de la escena de juego.
 public class MenuInventario : MonoBehaviour
 {
     public GameObject panelInventario;
     public Inventario inventario;
+    public Protagonista protagonista;
 
     [Header("Slots (en el mismo orden que el inventario)")]
     public Text[] textosSlots;      // texto dentro de cada slot
@@ -36,12 +38,13 @@ public class MenuInventario : MonoBehaviour
     void Start()
     {
         if (inventario == null) inventario = FindAnyObjectByType<Inventario>();
+        if (protagonista == null) protagonista = FindAnyObjectByType<Protagonista>();
 
-        // Al hacer clic en un slot, se elige ese slot
+        // Al hacer clic en un slot, se elige y, si es un arma, se equipa
         for (int i = 0; i < botonesSlots.Length; i++)
         {
             int indice = i; // copia para que cada botón recuerde su propio número
-            botonesSlots[i].onClick.AddListener(() => Seleccionar(indice));
+            botonesSlots[i].onClick.AddListener(() => AlHacerClic(indice));
         }
 
         Cerrar(); // el juego empieza con el inventario cerrado
@@ -66,6 +69,23 @@ public class MenuInventario : MonoBehaviour
         if (teclado.leftArrowKey.wasPressedThisFrame || teclado.aKey.wasPressedThisFrame) MoverSeleccion(-1);
         if (teclado.downArrowKey.wasPressedThisFrame || teclado.sKey.wasPressedThisFrame) MoverSeleccion(Columnas);
         if (teclado.upArrowKey.wasPressedThisFrame || teclado.wKey.wasPressedThisFrame) MoverSeleccion(-Columnas);
+        if (teclado.enterKey.wasPressedThisFrame) EquiparSeleccionada();
+    }
+
+    // Clic en un slot: lo elige y, si tiene un arma, la equipa
+    void AlHacerClic(int indice)
+    {
+        Seleccionar(indice);
+        EquiparSeleccionada();
+    }
+
+    // Equipa el arma del slot elegido (RF-11) y actualiza lo que se ve
+    void EquiparSeleccionada()
+    {
+        if (inventario.ObtenerSlot(seleccionado).Arma == null) return;
+        protagonista.EquiparArma(seleccionado);
+        ActualizarTextos();
+        Seleccionar(seleccionado);
     }
 
     void Abrir()
@@ -121,7 +141,14 @@ public class MenuInventario : MonoBehaviour
         for (int i = 0; i < textosSlots.Length && i < inventario.CantidadSlots; i++)
         {
             Slot slot = inventario.ObtenerSlot(i);
-            if (slot.TieneMunicion)
+            if (slot.Arma != null)
+            {
+                string texto = Nombre(slot);
+                if (slot.Arma.UsaMunicion) texto += "\n" + slot.Arma.municionActual + " / " + slot.Arma.municionPorCarga;
+                if (slot.Arma == protagonista.ArmaEquipada) texto += "\nEQUIPADA";
+                textosSlots[i].text = texto;
+            }
+            else if (slot.TieneMunicion)
                 textosSlots[i].text = Nombre(slot) + "\n" + slot.Cantidad + " / " + Slot.Capacidad(slot.TipoMunicion);
             else
                 textosSlots[i].text = Nombre(slot);
@@ -140,7 +167,18 @@ public class MenuInventario : MonoBehaviour
     // Detalle para la barra inferior, por ejemplo "2 de 4 · para armas de cargador"
     string Detalle(Slot slot)
     {
-        if (slot.Arma != null) return "Arma";
+        if (slot.Arma != null)
+        {
+            Arma arma = slot.Arma;
+            string balas = "Cuerpo a cuerpo";
+            if (arma.UsaMunicion)
+            {
+                string unidad = arma.tipoMunicion == TipoMunicion.Cargador ? " balas" : " cartuchos";
+                balas = arma.municionActual + " de " + arma.municionPorCarga + unidad;
+            }
+            string estado = arma == protagonista.ArmaEquipada ? "Equipada" : "Clic para equipar";
+            return balas + "  ·  " + estado;
+        }
         if (slot.Reservado) return "Lo ocupa un arma grande";
         if (slot.TieneMunicion)
         {
