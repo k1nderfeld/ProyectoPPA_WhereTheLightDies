@@ -9,8 +9,8 @@ public class Inventario : MonoBehaviour
     [SerializeField] private Slot[] slots;                   // se ven en el Inspector durante el juego
 
     [Header("Munición con la que parte el jugador")]
-    [SerializeField] private int cargadoresIniciales = 2;
-    [SerializeField] private int cartuchosIniciales = 6;
+    [SerializeField] private int cargadoresIniciales = 0;
+    [SerializeField] private int cartuchosIniciales = 0;
 
     public int CantidadSlots { get { return cantidadSlots; } }
 
@@ -31,6 +31,30 @@ public class Inventario : MonoBehaviour
     public Slot ObtenerSlot(int indice)
     {
         return slots[indice];
+    }
+
+    // Guarda un arma. Si ocupa varios slots, usa slots vacíos seguidos: el primero guarda el arma
+    // y los demás quedan reservados. Devuelve false si no hay espacio.
+    public bool AgregarArma(Arma arma)
+    {
+        int necesarios = arma.slotsInventario;
+        for (int inicio = 0; inicio + necesarios <= slots.Length; inicio++)
+        {
+            bool hayEspacio = true;
+            for (int i = inicio; i < inicio + necesarios; i++)
+            {
+                if (!slots[i].EstaVacio) hayEspacio = false;
+            }
+
+            if (hayEspacio)
+            {
+                slots[inicio].GuardarArma(arma);
+                for (int i = inicio + 1; i < inicio + necesarios; i++)
+                    slots[i].Reservar();
+                return true;
+            }
+        }
+        return false;
     }
 
     // Guarda munición: primero completa los slots que ya tienen ese tipo y después usa slots vacíos.
