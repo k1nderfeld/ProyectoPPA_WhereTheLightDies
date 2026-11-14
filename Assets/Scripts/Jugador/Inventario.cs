@@ -57,6 +57,20 @@ public class Inventario : MonoBehaviour
         return false;
     }
 
+    // Saca un arma del inventario: vacía su slot y los que reservaba (si es un arma grande)
+    public void SacarArma(Arma arma)
+    {
+        for (int i = 0; i < slots.Length; i++)
+        {
+            if (slots[i].Arma == arma)
+            {
+                for (int j = i; j < i + arma.slotsInventario && j < slots.Length; j++)
+                    slots[j].Vaciar();
+                return;
+            }
+        }
+    }
+
     // Guarda munición: primero completa los slots que ya tienen ese tipo y después usa slots vacíos.
     // Devuelve la cantidad que no cupo (0 si cupo todo).
     public int AgregarMunicion(TipoMunicion tipo, int cantidad)

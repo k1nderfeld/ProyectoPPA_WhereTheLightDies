@@ -202,6 +202,19 @@ public abstract class Arma : MonoBehaviour, IRecogible
         return true;
     }
 
+    // Deja el arma en el suelo (al botarla del inventario). Se puede volver a recoger con E.
+    public void Soltar(Vector3 posicion, Quaternion giro)
+    {
+        EnLaMano = false;
+        transform.SetParent(null);
+        transform.position = posicion + Vector3.up * 0.03f;
+        transform.rotation = giro * Quaternion.Euler(0f, 0f, 90f); // acostada de lado
+
+        var colision = GetComponent<Collider>();
+        if (colision != null) colision.enabled = true;
+        gameObject.SetActive(true);
+    }
+
     // Saca el arma (al equiparla) o la guarda
     public void Mostrar(bool visible)
     {
@@ -211,6 +224,8 @@ public abstract class Arma : MonoBehaviour, IRecogible
 
     void Sonar(AudioClip clip)
     {
-        if (clip != null && fuenteAudio != null) fuenteAudio.PlayOneShot(clip);
+        if (clip == null || fuenteAudio == null) return;
+        fuenteAudio.volume = Ajustes.VolumenEfectos; // por si se cambió en las opciones
+        fuenteAudio.PlayOneShot(clip);
     }
 }

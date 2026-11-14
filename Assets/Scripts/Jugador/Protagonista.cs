@@ -191,6 +191,30 @@ public class Protagonista : MonoBehaviour
         armaEquipada.Mostrar(true);
     }
 
+    // Bota lo que hay en el slot "indice" del inventario: queda en el suelo, frente al jugador,
+    // y se puede volver a recoger con E. Si el slot es un espacio reservado, bota el arma que lo ocupa.
+    public void BotarDelInventario(int indice)
+    {
+        while (indice > 0 && inventario.ObtenerSlot(indice).Reservado)
+            indice--;
+
+        Slot slot = inventario.ObtenerSlot(indice);
+        Vector3 suelo = transform.position + transform.forward * 1f; // un metro adelante, a la altura de los pies
+
+        if (slot.Arma != null)
+        {
+            Arma arma = slot.Arma;
+            if (arma == armaEquipada) armaEquipada = null; // si estaba en la mano, queda sin arma
+            inventario.SacarArma(arma);
+            arma.Soltar(suelo, transform.rotation);
+        }
+        else if (slot.TieneMunicion)
+        {
+            Municion.CrearCaja(slot.TipoMunicion, slot.Cantidad, suelo);
+            slot.Vaciar();
+        }
+    }
+
     // Recoge lo que esté cerca con la tecla E (RF-10)
     void Recoger()
     {
