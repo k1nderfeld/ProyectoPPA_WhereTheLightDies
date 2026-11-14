@@ -1,7 +1,14 @@
 using UnityEngine;
 
+public enum TipoMunicion{Cargador, Cartucho}
+
 public class Municion : MonoBehaviour
 {
+    public TipoMunicion tipo;
+    public int cantidad=1;
+
+
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {

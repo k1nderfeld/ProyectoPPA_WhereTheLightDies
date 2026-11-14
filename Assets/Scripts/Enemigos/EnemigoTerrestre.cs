@@ -1,105 +1,63 @@
 using UnityEngine;
-using UnityEngine.AI;
 
-public class EnemigoTerrestre : MonoBehaviour
+
+public class EnemigoTerrestre : Enemigo
 {
-    [SerializeField] private float conoVision =90f; //En grados
     [SerializeField] private float velocidadPatrulla = 2f;
     [SerializeField] private float velocidadPersecucion = 4f;
-    [SerializeField] private float rangoAtaque = 1.5f; //
-    [SerializeField] private float danio= 10f;
-    [SerializeField] private float tiempoEntreAtaques= 1f;
-    [SerializeField] private int cantidadRayos = 10;
-    private NavMeshAgent patrullaje;
-    Transform jugador;
-    Salud saludJugador;
-    [SerializeField] private float salud = 50f;
-    [SerializeField] private Transform cabeza;
-
-    //todos los puntos donde puede caminar el enemigo usando NavMesh
-    Vector3[] puntosPatrullaje;
-    
+    [SerializeField] private float radioPatrulla = 10f;
+    [SerializeField] private float tiempoDireccion = 4f;
+    [SerializeField] private float distanciaPared=1f;
+    [SerializeField] private float velocidadGiro= 5f;
+    Rigidbody rb;
+    Vector3 destino;
+    float temporizador;
 
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+
+    protected override void Start()
     {
-        // se obtiene el agente que contra al enemigo
-        patrullaje = GetComponent<NavMeshAgent>(); 
-        // busca un jugador si tiene el atrubuto salud;  
-        saludJugador=FindFirstObjectByType<Salud>();
-        // guarda la posibilidad de cambiar la salud del jugador solo si existe
-        if(saludJugador!=null){
-            jugador=saludJugador.transform;
+        base.Start();
+        rb.freezeRotation = true;
+        destino = transform.position;
+        temporizador = tiempoDireccion;
 
-        }
-        //Calcula todos los puntos patrullables
-        puntosPatrullaje = NavMesh.CalculateTriangulation().vertices;
     }
-
-    // Update is called once per frame
-    void Update()
+    void Awake()
     {
-        //si no hay jugador no hace nada
-        if(jugador==null) {
-            return;
-        }
-        //si algun raycast de veAlJuagor llega al jugador persigue
-        if(veAlJugador()==true){
-            perseguir();
-        }else{
-            patrullar();
-        }
-
-        
+        rb = GetComponent<Rigidbody>();
     }
-    
-    public void RecibirDanio(float danioRecibido)
+
+    protected override void Patrullar()
     {
-        salud -= danioRecibido;
-        if (salud <= 0f) {
-            Morir();
-            }
-    }
-
-    void SoltarMunicion(){
-
-    }
-    void Morir(){
-    // SoltarMunicion() pendiente
-    Destroy(gameObject);
-    }
-    void patrullar(){
-        patrullaje.speed = velocidadPatrulla;
-    }
-    
-    //Metodo para detectar si el jugador esta en el cono de vision enemigo
-    //Revisar
-    bool veAlJugador()
-    {
-        if(jugador==null) return false;
-        for (int i =0; i<10; i++)
+        temporizador+=Time.deltaTime;
+        if(temporizador>=tiempoDireccion)
         {
-            // en cada iteracion se calculan rayos desde -45 a 45 grados
-         float anguloDeRayo = -45f + (i*10f);
-
-
-         // gira desde donde esta la cabeza a anguloDeRayo
-         Vector3 direccionDeRayoEnI= Quaternion.Euler(0f,anguloDeRayo,0f) * cabeza.forward;
-
-
-         RaycastHit hit;
-         if(Physics.Raycast(cabeza.position, direccionDeRayoEnI, out hit ) && hit.transform==jugador)
-        {
-            return true;
-            }
+            temporizador=0f;
+            Vector2 circulo = Random.insideUnitCircle* radioPatrulla; 
+            destino= transform.position + new Vector3(circulo.x,0f,circulo.y);
         }
-        return false;
+        if (Physics.Raycast(transform.position, transform.forward, distanciaPared))
+        {
+            destino=transform.position-transform.forward * radioPatrulla;
+            temporizador=0f;
+        }
+        Vector3 alDestino=destino - transform.position;
+        alDestino.y =0f;
+
+        transform.rotation=Quaternion.LookRotation(alDestino);
+        Vector3 velocidad = alDestino.normalized*velocidadPatrulla;
+        rb.linearVelocity = new Vector3(velocidad.x, rb.linearVelocity.y, velocidad.z);
     }
-    bool perseguir()
+    
+    
+    protected override void Perseguir()
     {
-        return false;
+        Vector3 alJugador = jugador.position - transform.position;
+        alJugador.y = 0f;
+
+        transform.rotation = Quaternion.LookRotation(alJugador);
+        Vector3 velocidad = alJugador.normalized * velocidadPersecucion;
+        rb.linearVelocity = new Vector3(velocidad.x, rb.linearVelocity.y, velocidad.z);
     }
-
-
 }
