@@ -18,10 +18,11 @@ Lista de todos los scripts del proyecto, para qué sirve cada uno y dónde se us
 | `CamaraJugador` | `Scripts/Jugador` | Gira la vista con el mouse: izquierda y derecha giran el cuerpo, arriba y abajo giran la cámara (límite de ±85°). Usa la sensibilidad guardada en `Ajustes`. | `Jugador` |
 | `Inventario` | `Scripts/Jugador` | El inventario del protagonista: 4 slots. Agrega munición (primero completa los slots del mismo tipo y después usa slots vacíos), la quita al recargar y la cuenta. En el Inspector se elige con cuánta munición parte el jugador. | `Jugador` |
 | `Slot` | `Scripts/Jugador` | Un espacio del inventario: guarda un arma, munición de un solo tipo (hasta **4 cargadores** o **18 cartuchos**) o queda reservado cuando un arma ocupa varios espacios. No es un componente: el `Inventario` tiene los suyos. | Ningún objeto |
-| `Arma` | `Scripts/Armas` | Clase **abstracta** base de todas las armas (diagrama de clases). Tiene los datos del diagrama (daño por rayo, rango, rayos por ataque, cadencia, tiempo de recarga, munición por carga y actual, slots que ocupa y tipo de munición) y los métodos `usar()` (lanza rayos desde el centro de la pantalla y, si pegan a un enemigo, le hacen daño) y `sePuedeUsar()`. También se recarga, se recoge del suelo y se muestra en la mano. | Cada arma |
+| `Arma` | `Scripts/Armas` | Clase **abstracta** base de todas las armas (diagrama de clases). Tiene los datos del diagrama (daño por rayo, rango, rayos por ataque, cadencia, tiempo de recarga, munición por carga y actual, slots que ocupa y tipo de munición) y los métodos `usar()` (lanza rayos desde el centro de la pantalla y, si pegan a un enemigo, le hacen daño) y `sePuedeUsar()`. También se recarga, se recoge del suelo y se muestra en la mano. Al disparar: retroceso (salta hacia atrás y arriba), fogonazo (una luz breve) y marca de bala en paredes y suelo, que se borra a los 10 s. | Cada arma |
 | `Pistola` | `Scripts/Armas` | Hereda de `Arma`. Un disparo de 20 de daño, cargador de 6 balas, ocupa 1 slot (RF-13). | Objeto `Pistola` |
 | `Escopeta` | `Scripts/Armas` | Hereda de `Arma`. 8 perdigones con dispersión, 6 cartuchos que se recargan de a uno, ocupa **2 slots** (RF-14). | Objeto `Escopeta` |
-| `CuerpoACuerpo` | `Scripts/Armas` | Hereda de `Arma`. La palanca: golpe de 25 a 2 m o menos, sin munición (RF-12). | Objeto `Palanca` |
+| `CuerpoACuerpo` | `Scripts/Armas` | Hereda de `Arma`. La palanca: golpe de 25 a 2 m o menos, sin munición (RF-12). Cambia el retroceso por un golpe en arco. | Objeto `Palanca` |
+| `AnimacionArma` | `Scripts/Armas` | Mueve la `Mano` para que el arma se vea viva: balanceo al caminar (más al correr), inercia al girar con el mouse, sube al equiparla y baja e inclina al recargar. | Objeto `Mano` |
 | `TipoMunicion` | `Scripts/Armas` | Tipos de munición del diagrama: `Cargador` y `Cartucho`. | Ningún objeto |
 | `IRecogible` | `Scripts/Recogibles` | **Interfaz** de lo que se recoge con E: un texto para el aviso y el método `Recoger`. La implementan `Arma` y `Municion`. | Ningún objeto |
 | `Municion` | `Scripts/Recogibles` | Caja de cargadores o cartuchos en el suelo. Al recogerla guarda una unidad por vez con `Protagonista.RecogerMunicion`; lo que no cabe se queda en el suelo. | Cada caja de munición |
@@ -55,7 +56,7 @@ MenuPrincipal.unity
 ## Escenas de juego
 
 - `Sotano_Conceptual`: escena generada por script, solo para mostrar el ambiente.
-- `Sotano_Jugable`: copia de la anterior donde el jugador ya se mueve, mira, corre, puede pausar (Escape) y abrir el inventario (Tab). El botón **Jugar** del menú carga esta escena.
+- `Sotano_Jugable`: copia de la anterior donde el jugador ya se mueve, mira, corre, puede pausar (Escape), abrir el inventario (Tab) y usar armas. El HUD de prueba (mira y "0/6") está oculto, porque el juego no tiene HUD (RF-08). El botón **Jugar** del menú carga esta escena.
 
 ## Clases del diagrama y su estado
 
