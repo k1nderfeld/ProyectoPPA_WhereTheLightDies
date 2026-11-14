@@ -29,6 +29,10 @@ public abstract class Arma : MonoBehaviour, IRecogible
     public AudioClip sonidoEquipar;
     public AudioClip sonidoImpacto;         // suena donde pega el rayo
 
+    [Header("Efectos")]
+    public Light fogonazo;                  // luz breve en la boca del arma al disparar
+    public Material materialMarca;          // marca oscura donde pega la bala
+
     public bool Recargando { get; private set; }
     public bool EnLaMano { get; private set; }
 
@@ -38,6 +42,7 @@ public abstract class Arma : MonoBehaviour, IRecogible
     public string Descripcion { get { return "Recoger " + name.ToLower(); } }
 
     float proximoAtaque;                    // momento desde el que se puede volver a atacar
+    float finFogonazo;                      // momento en que se apaga el fogonazo
     AudioSource fuenteAudio;
 
     // Cada arma pone aquí sus valores (daño, rango, munición...). Lo usa el comando del editor.
@@ -57,9 +62,16 @@ public abstract class Arma : MonoBehaviour, IRecogible
 
     void Update()
     {
-        // Después de atacar, el arma vuelve suave a su posición (efecto de retroceso)
+        // Después de atacar, el arma vuelve suave a su posición y a su giro (efecto de retroceso)
         if (EnLaMano)
+        {
             transform.localPosition = Vector3.Lerp(transform.localPosition, posicionEnMano, 12f * Time.deltaTime);
+            transform.localRotation = Quaternion.Slerp(transform.localRotation, Quaternion.Euler(rotacionEnMano), 10f * Time.deltaTime);
+        }
+
+        // El fogonazo dura muy poco
+        if (fogonazo != null && fogonazo.enabled && Time.time > finFogonazo)
+            fogonazo.enabled = false;
     }
 
     // Ataca: lanza "cantidadRayosAtaque" rayos desde el centro de la cámara (RF-12, RF-13 y RF-14).
@@ -75,7 +87,13 @@ public abstract class Arma : MonoBehaviour, IRecogible
         proximoAtaque = Time.time + 1f / cadencia;
         if (UsaMunicion) municionActual--;
         Sonar(sonidoAtaque);
-        transform.localPosition = posicionEnMano + new Vector3(0f, 0.01f, -0.05f); // retroceso
+        Retroceso();
+
+        if (fogonazo != null)
+        {
+            fogonazo.enabled = true;
+            finFogonazo = Time.time + 0.05f;
+        }
 
         Transform camara = Camera.main.transform;
         for (int i = 0; i < cantidadRayosAtaque; i++)
@@ -84,11 +102,36 @@ public abstract class Arma : MonoBehaviour, IRecogible
             if (Physics.Raycast(camara.position, DireccionDelRayo(camara), out golpe, rango))
             {
                 EnemigoTerrestre enemigo = golpe.collider.GetComponentInParent<EnemigoTerrestre>();
-                if (enemigo != null) enemigo.RecibirDanio(danioPorRayo);
+                if (enemigo != null)
+                    enemigo.RecibirDanio(danioPorRayo);
+                else if (UsaMunicion && !golpe.collider.isTrigger)
+                    DejarMarca(golpe); // las balas marcan paredes y suelo; la palanca no
 
                 if (sonidoImpacto != null) AudioSource.PlayClipAtPoint(sonidoImpacto, golpe.point, 0.6f * Ajustes.VolumenEfectos);
             }
         }
+    }
+
+    // Al disparar, el arma salta hacia atrás y hacia arriba; después vuelve sola (ver Update).
+    // Es "virtual": la palanca la cambia por un golpe en arco.
+    protected virtual void Retroceso()
+    {
+        transform.localPosition = posicionEnMano + new Vector3(0f, 0.015f, -0.06f);
+        transform.localRotation = Quaternion.Euler(rotacionEnMano + new Vector3(-8f, 0f, 0f));
+    }
+
+    // Deja una marca oscura donde pegó la bala. Se borra sola a los 10 segundos.
+    void DejarMarca(RaycastHit golpe)
+    {
+        if (materialMarca == null) return;
+
+        GameObject marca = GameObject.CreatePrimitive(PrimitiveType.Quad);
+        Destroy(marca.GetComponent<Collider>());
+        marca.transform.position = golpe.point + golpe.normal * 0.005f; // un poco separada de la pared
+        marca.transform.rotation = Quaternion.LookRotation(-golpe.normal); // mirando hacia afuera de la pared
+        marca.transform.localScale = Vector3.one * 0.06f;
+        marca.GetComponent<Renderer>().sharedMaterial = materialMarca;
+        Destroy(marca, 10f);
     }
 
     // ¿Puede atacar ahora? No está recargando, ya pasó el tiempo entre ataques y tiene munición (si la usa).

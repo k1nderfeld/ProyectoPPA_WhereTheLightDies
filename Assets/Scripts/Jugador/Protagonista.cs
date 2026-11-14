@@ -33,6 +33,7 @@ public class Protagonista : MonoBehaviour
 
     // Otros scripts (enemigos, efectos de pantalla, avisos) pueden leer estos datos, pero no cambiarlos
     public bool EstaCorriendo { get; private set; }
+    public bool SeMueve { get; private set; }       // si está caminando o corriendo (lo usa AnimacionArma)
     public bool EstaMuerto { get; private set; }
     public float SaludActual { get { return saludActual; } }
     public float SaludMaxima { get { return saludMaxima; } }
@@ -115,6 +116,7 @@ public class Protagonista : MonoBehaviour
     {
         bool quiereCorrer = Keyboard.current != null && Keyboard.current.leftShiftKey.isPressed;
         bool seMueve = entradaMovimiento.sqrMagnitude > 0.01f;
+        SeMueve = seMueve;
         bool puedeCorrer = !estaminaAgotada && estaminaActual > 0f;
         EstaCorriendo = quiereCorrer && seMueve && puedeCorrer;
 
