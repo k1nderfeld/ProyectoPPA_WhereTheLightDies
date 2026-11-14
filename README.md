@@ -44,7 +44,7 @@ Assets/
 ├── Arte/             Concepto, Interfaz y Materiales
 ├── Audio/            Musica y Efectos
 ├── Configuracion/    Ajustes de render (URP) y perfiles de efectos
-├── Editor/           Scripts del editor (menú "Goty Devs")
+├── Editor/           Comandos del menú "Goty Devs" (solo locales; no se suben)
 ├── Escenas/          Escenas del juego
 ├── Scripts/          Código del juego (Menu, Sistemas, ...)
 └── Terceros/         Assets descargados (no se modifican)
