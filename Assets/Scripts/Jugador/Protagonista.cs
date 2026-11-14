@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 // Es la clase "Protagonista" del diagrama de clases (docs/diagrama_clases.png) y reúne lo que
 // antes eran los scripts MovimientoJugador, Estamina y Salud.
 // Se agrega al objeto "Jugador". La cámara con el mouse va aparte, en CamaraJugador.
-[RequireComponent(typeof(CharacterController))]
+[RequireComponent(typeof(CharacterController), typeof(Inventario))]
 public class Protagonista : MonoBehaviour
 {
     [Header("Salud")]
@@ -25,7 +25,7 @@ public class Protagonista : MonoBehaviour
     [SerializeField] private float velocidadCorrer = 5f;              // al menos 1,5 veces la de caminar (RF-03)
     [SerializeField] private float gravedad = -20f;                   // qué tan fuerte cae
 
-    [Header("Armas (se completan en la issue #10)")]
+    [Header("Inventario y armas (issue #10)")]
     [SerializeField] private Inventario inventario;                   // el protagonista posee un inventario
     [SerializeField] private Arma armaEquipada;                       // y puede tener un arma equipada
 
@@ -46,6 +46,7 @@ public class Protagonista : MonoBehaviour
     void Awake()
     {
         controlador = GetComponent<CharacterController>();
+        if (inventario == null) inventario = GetComponent<Inventario>();
     }
 
     void Start()
