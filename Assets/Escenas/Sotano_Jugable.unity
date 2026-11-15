@@ -796,7 +796,7 @@ MonoBehaviour:
     m_FontStyle: 1
     m_BestFit: 0
     m_MinSize: 10
-    m_MaxSize: 40
+    m_MaxSize: 60
     m_Alignment: 3
     m_AlignByGeometry: 0
     m_RichText: 1
@@ -10913,15 +10913,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93f1b5a6a5e4b7cf08de0cf52d150957, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemigoTerrestre
-  conoVision: 90
-  velocidadPatrulla: 2
-  velocidadPersecucion: 4
+  salud: 50
+  rangoDeteccion: 10
   rangoAtaque: 1.5
   danio: 10
   tiempoEntreAtaques: 1
-  cantidadRayos: 10
-  salud: 50
-  cabeza: {fileID: 1664961480}
+  velocidadPatrulla: 1.5
+  velocidadPersecucion: 2.5
+  radioPatrulla: 10
+  tiempoDireccion: 4
+  distanciaPared: 1
 --- !u!1 &1668204251
 GameObject:
   m_ObjectHideFlags: 0

@@ -101,7 +101,7 @@ public abstract class Arma : MonoBehaviour, IRecogible
             RaycastHit golpe;
             if (Physics.Raycast(camara.position, DireccionDelRayo(camara), out golpe, rango))
             {
-                EnemigoTerrestre enemigo = golpe.collider.GetComponentInParent<EnemigoTerrestre>();
+                Enemigo enemigo = golpe.collider.GetComponentInParent<Enemigo>();
                 if (enemigo != null)
                     enemigo.RecibirDanio(danioPorRayo);
                 else if (UsaMunicion && !golpe.collider.isTrigger)
