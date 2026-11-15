@@ -8,23 +8,40 @@ public abstract class Enemigo : MonoBehaviour
     [SerializeField] protected float salud = 50f;
     [SerializeField] protected float rangoDeteccion = 10f;
     [SerializeField] protected float rangoAtaque = 1.5f;
-    [SerializeField] protected float danio = 10f;
-    [SerializeField] protected float tiempoEntreAtaques = 0.5f;
+    [SerializeField] protected float danio = 34f;              // 3 golpes matan al jugador (salud 100)
+    [SerializeField] protected float tiempoEntreAtaques = 1f;
+    [SerializeField] protected Color colorAtaque = Color.red;  // se pone de este color al golpear
 
     protected Transform jugador;
     protected Protagonista protagonista;
     float contadorAtaque;
+    Renderer[] partes;      // las mallas del enemigo, para pintarlas al atacar
+    Color[] coloresNormales;
+    float finDestello;
 
     protected virtual void Start()
     {
         protagonista = FindAnyObjectByType<Protagonista>();
         if (protagonista != null)
             jugador = protagonista.transform;
+
+        // Guarda el color original de cada parte para volver a él después del golpe
+        partes = GetComponentsInChildren<Renderer>();
+        coloresNormales = new Color[partes.Length];
+        for (int i = 0; i < partes.Length; i++)
+            coloresNormales[i] = partes[i].material.color;
     }
 
     protected virtual void Update()
     {
         if (jugador == null) return;
+
+        // Cuando termina el destello del golpe, vuelve a su color
+        if (finDestello > 0f && Time.time >= finDestello)
+        {
+            finDestello = 0f;
+            PintarPartes(false);
+        }
 
         // Si el jugador murió o no lo ve, sigue patrullando
         if (protagonista.EstaMuerto || !VeAlJugador())
@@ -53,6 +70,19 @@ public abstract class Enemigo : MonoBehaviour
         {
             contadorAtaque = 0f;
             protagonista.RecibirDanio(danio);
+
+            // Se nota el golpe: el enemigo se pone rojo un instante
+            PintarPartes(true);
+            finDestello = Time.time + 0.2f;
+        }
+    }
+
+    void PintarPartes(bool rojo)
+    {
+        for (int i = 0; i < partes.Length; i++)
+        {
+            if (partes[i] == null) continue;
+            partes[i].material.color = rojo ? colorAtaque : coloresNormales[i];
         }
     }
 

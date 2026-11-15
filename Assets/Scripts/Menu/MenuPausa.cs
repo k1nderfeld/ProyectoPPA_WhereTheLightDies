@@ -32,6 +32,7 @@ public class MenuPausa : MonoBehaviour
     void Update()
     {
         if (MenuInventario.EstaAbierto) return; // con el inventario abierto no se pausa
+        if (PantallaFinal.Terminado) return;    // tampoco en la pantalla de derrota o victoria
 
         if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
         {

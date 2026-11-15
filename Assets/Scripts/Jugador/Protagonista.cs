@@ -35,6 +35,7 @@ public class Protagonista : MonoBehaviour
     public bool EstaCorriendo { get; private set; }
     public bool SeMueve { get; private set; }       // si está caminando o corriendo (lo usa AnimacionArma)
     public bool EstaMuerto { get; private set; }
+    public float TiempoUltimoDanio { get; private set; } = -10f; // cuándo recibió el último golpe (lo usa EfectoDanio)
     public float SaludActual { get { return saludActual; } }
     public float SaludMaxima { get { return saludMaxima; } }
     public float EstaminaActual { get { return estaminaActual; } }
@@ -160,6 +161,7 @@ public class Protagonista : MonoBehaviour
         if (EstaMuerto) return;
 
         saludActual -= danio;
+        TiempoUltimoDanio = Time.time;
         if (saludActual <= 0f)
         {
             saludActual = 0f;
@@ -243,7 +245,8 @@ public class Protagonista : MonoBehaviour
         }
     }
 
-    void MostrarMensaje(string texto)
+    // También la usa la salida del nivel para avisar que quedan enemigos
+    public void MostrarMensaje(string texto)
     {
         mensaje = texto;
         finMensaje = Time.time + 2f; // se ve durante 2 segundos
