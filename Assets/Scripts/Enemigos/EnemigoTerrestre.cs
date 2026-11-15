@@ -80,8 +80,16 @@ public class EnemigoTerrestre : Enemigo
         direccion.y = 0f;
         if (direccion.magnitude < 0.1f) return; // ya llegó
 
-        transform.rotation = Quaternion.LookRotation(direccion);
+        transform.rotation = Quaternion.RotateTowards(transform.rotation,Quaternion.LookRotation(direccion), 180f*Time.deltaTime);
         Vector3 movimiento = direccion.normalized * velocidad;
         rb.linearVelocity = new Vector3(movimiento.x, rb.linearVelocity.y, movimiento.z);
     }
+
+    void OnCollisionEnter(Collision collision)
+    {
+        destino = transform.position - transform.forward * radioPatrulla;
+        temporizador = 0f;
+    }
+
+
 }
