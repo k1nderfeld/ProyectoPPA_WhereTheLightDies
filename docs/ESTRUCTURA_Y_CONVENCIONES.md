@@ -14,10 +14,14 @@ Assets/
 │   ├── Musica/           Música y sonidos ambientales largos
 │   └── Efectos/          Sonidos cortos (clics, disparos, pasos, golpes)
 ├── Configuracion/        Ajustes de render (URP) y perfiles de efectos
-├── Editor/               Scripts que solo funcionan en el editor (menú "Goty Devs")
+├── Editor/               Comandos del menú "Goty Devs" (solo locales; no se suben)
 ├── Escenas/              Escenas del juego (.unity)
 ├── Scripts/              Código del juego, una carpeta por tema
-│   ├── Menu/             Menú principal y opciones
+│   ├── Armas/            Las armas (Arma y sus tipos) y TipoMunicion
+│   ├── Enemigos/         Enemigos y su comportamiento
+│   ├── Jugador/          El protagonista, su cámara y el inventario
+│   ├── Menu/             Menú principal, opciones y pausa
+│   ├── Recogibles/       Lo que se recoge con E (IRecogible, munición)
 │   └── Sistemas/         Código que usa todo el juego (por ejemplo, Ajustes)
 └── Terceros/             Assets descargados (no se modifican). Ej.: Infima Games
 ```
@@ -30,9 +34,6 @@ Assets/
 | `Assets/Animaciones/` | Animaciones y animators propios |
 | `Assets/Arte/Modelos/` | Modelos 3D propios |
 | `Assets/Arte/Texturas/` | Texturas propias |
-| `Assets/Scripts/Jugador/` | Movimiento, cámara, estamina, inventario |
-| `Assets/Scripts/Armas/` | Disparo, munición, recarga |
-| `Assets/Scripts/Enemigos/` | Zombie, ojo-cámara, jefe final |
 | `Assets/Scripts/Niveles/` | Puertas, escaleras, cambio de nivel |
 
 Fuera de `Assets/`:
