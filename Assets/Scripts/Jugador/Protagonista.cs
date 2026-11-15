@@ -64,12 +64,16 @@ public class Protagonista : MonoBehaviour
     {
         controlador = GetComponent<CharacterController>();
         if (inventario == null) inventario = GetComponent<Inventario>();
+        saludActual = saludMaxima;
+        estaminaActual = estaminaMaxima;
+        estaminaAgotada = false;
     }
 
     void Start()
     {
         saludActual = saludMaxima;
         estaminaActual = estaminaMaxima;
+        estaminaAgotada = false;
     }
 
     void Update()
@@ -124,14 +128,13 @@ public class Protagonista : MonoBehaviour
 
         if (EstaCorriendo)
         {
-            // Corriendo: gasta estamina y reinicia la espera
             estaminaActual -= gastoEstaminaPorSegundo * Time.deltaTime;
             tiempoSinCorrer = 0f;
 
             if (estaminaActual <= 0f)
             {
                 estaminaActual = 0f;
-                estaminaAgotada = true;
+                estaminaAgotada = true; // la respiración agitada la toca SonidosJugador
             }
         }
         else

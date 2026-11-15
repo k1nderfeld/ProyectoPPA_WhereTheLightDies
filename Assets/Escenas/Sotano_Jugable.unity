@@ -17027,7 +17027,8 @@ MonoBehaviour:
   panelInventario: {fileID: 181011636}
   inventario: {fileID: 1295173063}
   protagonista: {fileID: 1295173061}
-  sonidoAbrir: {fileID: 8300000, guid: 2d012c09c4e489e4ba629b8474ead236, type: 3}
+  sonidoCerrar: {fileID: 8300000, guid: 9c3b394286254e5488a30714bca30e08, type: 3}
+  sonidoAbrir: {fileID: 8300000, guid: 9f00f1e4b22e5b34da33b146ad41f85f, type: 3}
   textosSlots:
   - {fileID: 776116098}
   - {fileID: 78564301}
@@ -18843,8 +18844,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 640, y: 15}
-  m_SizeDelta: {x: 520, y: 766}
+  m_AnchoredPosition: {x: -529.54, y: -13}
+  m_SizeDelta: {x: 860.633, y: 1146.513}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1582139460
 MonoBehaviour:
@@ -18866,9 +18867,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: ff6bf66a77c831e4e9bf3672a51c48b0, type: 3}
+  m_Sprite: {fileID: -2176333143563411637, guid: 76f8fae83e2391249b4a1c119d7e8723, type: 3}
   m_Type: 0
-  m_PreserveAspect: 1
+  m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
@@ -18957,7 +18958,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -250, y: 15}
+  m_AnchoredPosition: {x: 310, y: 15}
   m_SizeDelta: {x: 1180, y: 700}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1619301116

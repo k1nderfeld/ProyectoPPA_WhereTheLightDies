@@ -12,8 +12,11 @@ public class MenuInventario : MonoBehaviour
     public GameObject panelInventario;
     public Inventario inventario;
     public Protagonista protagonista;
-    public AudioClip sonidoAbrir;   // suena al abrir el inventario
-    AudioSource fuenteSonido;
+
+    [Header("Audio")]
+    public AudioSource audioInventario;
+    public AudioClip sonidoAbrir;
+    public AudioClip sonidoCerrar;
 
     [Header("Slots (en el mismo orden que el inventario)")]
     public Text[] textosSlots;      // texto dentro de cada slot
@@ -102,23 +105,27 @@ public class MenuInventario : MonoBehaviour
     void Abrir()
     {
         EstaAbierto = true;
-        if (sonidoAbrir != null)
-        {
-            // AudioSource propio: suena aunque el juego esté detenido
-            if (fuenteSonido == null) fuenteSonido = gameObject.AddComponent<AudioSource>();
-            fuenteSonido.PlayOneShot(sonidoAbrir, Ajustes.VolumenEfectos);
-        }
         ActualizarTextos();
         Seleccionar(seleccionado);
         panelInventario.SetActive(true);
+        Sonar(sonidoAbrir);
         Time.timeScale = 0f;                       // detiene el juego
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
     }
 
+    // Suena aunque el juego esté detenido (el AudioSource no depende de Time.timeScale)
+    void Sonar(AudioClip clip)
+    {
+        if (clip == null) return;
+        if (audioInventario == null) audioInventario = gameObject.AddComponent<AudioSource>();
+        audioInventario.PlayOneShot(clip, Ajustes.VolumenEfectos);
+    }
+
     void Cerrar()
     {
         EstaAbierto = false;
+        Sonar(sonidoCerrar);
         panelInventario.SetActive(false);
         Time.timeScale = 1f;                       // el juego sigue
         Cursor.lockState = CursorLockMode.Locked;
