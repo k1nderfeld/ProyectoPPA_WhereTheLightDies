@@ -31,20 +31,12 @@ public class Protagonista : MonoBehaviour
     [SerializeField] private Transform mano;                          // donde se guardan las armas (hijo de la cámara)
     [SerializeField] private float distanciaRecoger = 2f;             // RF-10: se recoge a 2 m o menos
 
-    [Header("Audio del Protagonista")]
-    [SerializeField] private AudioSource audioJugador;
-    [SerializeField] private AudioClip sonidoCansancio;
-    [SerializeField] private AudioClip sonidoPaso;
-    [SerializeField] private float intervaloCaminar = 0.5f;  // Cada cuánto suena al caminar
-    [SerializeField] private float intervaloCorrer = 0.3f;   // Cada cuánto suena al correr (más rápido)
-    [Range(0f, 1f)] [SerializeField] private float volumenPasos = 0.3f;
-    [Range(0f, 1f)] [SerializeField] private float volumenCansancio = 1f;
-    private float temporizadorPasos;
-
     // Otros scripts (enemigos, efectos de pantalla, avisos) pueden leer estos datos, pero no cambiarlos
     public bool EstaCorriendo { get; private set; }
     public bool SeMueve { get; private set; }       // si está caminando o corriendo (lo usa AnimacionArma)
     public bool EstaMuerto { get; private set; }
+    public bool EstaCansado { get { return estaminaAgotada; } } // se le acabó la estamina (lo usa SonidosJugador)
+    public float TiempoUltimoDanio { get; private set; } = -10f; // cuándo recibió el último golpe (lo usa EfectoDanio)
     public float SaludActual { get { return saludActual; } }
     public float SaludMaxima { get { return saludMaxima; } }
     public float EstaminaActual { get { return estaminaActual; } }
@@ -91,7 +83,6 @@ public class Protagonista : MonoBehaviour
         entradaMovimiento = LeerEntrada();
         Correr();
         Mover();
-        GestionarPasos();
 
         // En pausa o con el inventario abierto no se ataca ni se recoge. Tampoco en el cuadro en que
         // se reanuda, para que el clic en "Reanudar" no dispare el arma.
@@ -115,7 +106,7 @@ public class Protagonista : MonoBehaviour
         // Hacia donde mira el jugador: adelante y a la derecha
         Vector3 direccion = transform.right * entradaMovimiento.x + transform.forward * entradaMovimiento.y;
         float velocidad = EstaCorriendo ? velocidadCorrer : velocidadCaminar;
-        Vector3 movimiento = direccion * velocidad; 
+        Vector3 movimiento = direccion * velocidad;
 
         // Gravedad: si está en el suelo se queda pegado; si no, cae cada vez más rápido
         if (controlador.isGrounded && velocidadVertical < 0f)
@@ -129,7 +120,6 @@ public class Protagonista : MonoBehaviour
     // Decide si el protagonista corre con Shift y gasta o recupera la estamina (RF-03 y RF-04).
     public void Correr()
     {
-        
         bool quiereCorrer = Keyboard.current != null && Keyboard.current.leftShiftKey.isPressed;
         bool seMueve = entradaMovimiento.sqrMagnitude > 0.01f;
         SeMueve = seMueve;
@@ -144,16 +134,7 @@ public class Protagonista : MonoBehaviour
             if (estaminaActual <= 0f)
             {
                 estaminaActual = 0f;
-                if (!estaminaAgotada)
-                {
-                    estaminaAgotada = true;
-                    
-                    // Solo suena si el jugador estaba corriendo de verdad
-                    if (audioJugador != null && sonidoCansancio != null)
-                    {
-                        audioJugador.PlayOneShot(sonidoCansancio, volumenCansancio);
-                    }
-                }
+                estaminaAgotada = true; // la respiración agitada la toca SonidosJugador
             }
         }
         else
@@ -173,25 +154,6 @@ public class Protagonista : MonoBehaviour
         }
     }
 
-    void GestionarPasos()
-    {
-        // Si el jugador se está moviendo con las teclas y está en el suelo
-        if (entradaMovimiento.sqrMagnitude > 0.01f && controlador.isGrounded)
-        {
-            temporizadorPasos -= Time.deltaTime;
-            if (temporizadorPasos <= 0f)
-            {
-                if (audioJugador != null && sonidoPaso != null)
-                {
-                    audioJugador.PlayOneShot(sonidoPaso, volumenPasos);
-                }
-
-                // Ajusta el intervalo dependiendo de si está corriendo o caminando
-                temporizadorPasos = EstaCorriendo ? intervaloCorrer : intervaloCaminar;
-            }
-        }
-    }
-
     // Empuja a un enemigo u objeto cercano con la tecla F (RF-05). Pendiente.
     public void Empujar()
     {
@@ -203,6 +165,7 @@ public class Protagonista : MonoBehaviour
         if (EstaMuerto) return;
 
         saludActual -= danio;
+        TiempoUltimoDanio = Time.time;
         if (saludActual <= 0f)
         {
             saludActual = 0f;
@@ -262,7 +225,13 @@ public class Protagonista : MonoBehaviour
     void Recoger()
     {
         if (RecogibleCercano == null) return;
-        if (!RecogibleCercano.Recoger(this)) MostrarMensaje("No hay espacio en el inventario");
+        if (!RecogibleCercano.Recoger(this))
+        {
+            MostrarMensaje("No hay espacio en el inventario");
+            return;
+        }
+        SonidosJugador sonidos = GetComponent<SonidosJugador>();
+        if (sonidos != null) sonidos.Recoger();
     }
 
     // Busca lo más cercano que se pueda recoger, dentro de la distancia permitida
@@ -286,7 +255,8 @@ public class Protagonista : MonoBehaviour
         }
     }
 
-    void MostrarMensaje(string texto)
+    // También la usa la salida del nivel para avisar que quedan enemigos
+    public void MostrarMensaje(string texto)
     {
         mensaje = texto;
         finMensaje = Time.time + 2f; // se ve durante 2 segundos

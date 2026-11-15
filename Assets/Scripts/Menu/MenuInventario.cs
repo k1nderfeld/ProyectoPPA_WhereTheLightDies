@@ -9,8 +9,6 @@ using UnityEngine.UI;
 // Se agrega al objeto "Canvas_Inventario" de la escena de juego.
 public class MenuInventario : MonoBehaviour
 {
-
-    
     public GameObject panelInventario;
     public Inventario inventario;
     public Protagonista protagonista;
@@ -110,16 +108,24 @@ public class MenuInventario : MonoBehaviour
         ActualizarTextos();
         Seleccionar(seleccionado);
         panelInventario.SetActive(true);
-        if (audioInventario != null && sonidoAbrir != null) audioInventario.PlayOneShot(sonidoAbrir);
+        Sonar(sonidoAbrir);
         Time.timeScale = 0f;                       // detiene el juego
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
     }
 
+    // Suena aunque el juego esté detenido (el AudioSource no depende de Time.timeScale)
+    void Sonar(AudioClip clip)
+    {
+        if (clip == null) return;
+        if (audioInventario == null) audioInventario = gameObject.AddComponent<AudioSource>();
+        audioInventario.PlayOneShot(clip, Ajustes.VolumenEfectos);
+    }
+
     void Cerrar()
     {
         EstaAbierto = false;
-        if (audioInventario != null && sonidoCerrar != null) audioInventario.PlayOneShot(sonidoCerrar);
+        Sonar(sonidoCerrar);
         panelInventario.SetActive(false);
         Time.timeScale = 1f;                       // el juego sigue
         Cursor.lockState = CursorLockMode.Locked;
