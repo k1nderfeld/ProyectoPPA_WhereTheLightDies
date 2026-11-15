@@ -113,3 +113,8 @@ InitTestScene*.unity*
 /Assets/Terceros/Infima Games/Low Poly Shooter Pack - Free Sample/Art/Animations.meta
 /Assets/Terceros/Infima Games/Low Poly Shooter Pack - Free Sample/Animators/
 /Assets/Terceros/Infima Games/Low Poly Shooter Pack - Free Sample/Animators.meta
+
+# Comandos del menú "Goty Devs" (scripts de editor): se usan solo en cada computador
+# para armar escenas; no se suben al repositorio.
+/Assets/Editor/
+/Assets/Editor.meta

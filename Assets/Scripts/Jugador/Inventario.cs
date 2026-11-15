@@ -1,47 +1,115 @@
-using System;
 using UnityEngine;
 
+// El inventario del protagonista: 4 slots para armas y munición (RF-09).
+// Es la clase "Inventario" del diagrama de clases (el protagonista lo posee).
+// Se agrega al objeto "Jugador", junto al Protagonista. En pantalla se ve con MenuInventario (tecla Tab).
 public class Inventario : MonoBehaviour
 {
-    [SerializeField] private int cantidadSlots=4;
-    [SerializeField] private int cargadoresSlot=4;
-    [SerializeField] private int cargadores=0;
-    [SerializeField] private Arma[] armas = new Arma[4];
+    [SerializeField] private int cantidadSlots = 4;
+    [SerializeField] private Slot[] slots;                   // se ven en el Inspector durante el juego
 
+    [Header("Munición con la que parte el jugador")]
+    [SerializeField] private int cargadoresIniciales = 0;
+    [SerializeField] private int cartuchosIniciales = 0;
 
+    public int CantidadSlots { get { return cantidadSlots; } }
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Awake()
+    {
+        // Crea los slots vacíos
+        slots = new Slot[cantidadSlots];
+        for (int i = 0; i < cantidadSlots; i++)
+            slots[i] = new Slot();
+    }
+
     void Start()
     {
-        
+        AgregarMunicion(TipoMunicion.Cargador, cargadoresIniciales);
+        AgregarMunicion(TipoMunicion.Cartucho, cartuchosIniciales);
     }
 
-    // Update is called once per frame
-    void Update()
+    public Slot ObtenerSlot(int indice)
     {
-        
+        return slots[indice];
     }
-    public int slotsUsados()
-    {
-        int usados=0;
 
-        for(int i =0; i<armas.Length; i++)
+    // Guarda un arma. Si ocupa varios slots, usa slots vacíos seguidos: el primero guarda el arma
+    // y los demás quedan reservados. Devuelve false si no hay espacio.
+    public bool AgregarArma(Arma arma)
+    {
+        int necesarios = arma.slotsInventario;
+        for (int inicio = 0; inicio + necesarios <= slots.Length; inicio++)
         {
-            if (armas[i] != null)
+            bool hayEspacio = true;
+            for (int i = inicio; i < inicio + necesarios; i++)
             {
-                usados += armas[i].slotsInventario;
+                if (!slots[i].EstaVacio) hayEspacio = false;
             }
 
+            if (hayEspacio)
+            {
+                slots[inicio].GuardarArma(arma);
+                for (int i = inicio + 1; i < inicio + necesarios; i++)
+                    slots[i].Reservar();
+                return true;
+            }
         }
-        usados+=(cargadores+cargadoresSlot -1) / cargadoresSlot;
-        return usados;
+        return false;
     }
-    public int slotsLibres()
+
+    // Saca un arma del inventario: vacía su slot y los que reservaba (si es un arma grande)
+    public void SacarArma(Arma arma)
     {
-    return cantidadSlots - slotsUsados();
+        for (int i = 0; i < slots.Length; i++)
+        {
+            if (slots[i].Arma == arma)
+            {
+                for (int j = i; j < i + arma.slotsInventario && j < slots.Length; j++)
+                    slots[j].Vaciar();
+                return;
+            }
+        }
     }
 
-    
+    // Guarda munición: primero completa los slots que ya tienen ese tipo y después usa slots vacíos.
+    // Devuelve la cantidad que no cupo (0 si cupo todo).
+    public int AgregarMunicion(TipoMunicion tipo, int cantidad)
+    {
+        foreach (Slot slot in slots)
+        {
+            if (cantidad > 0 && slot.TieneMunicion && slot.TipoMunicion == tipo)
+                cantidad = slot.AgregarMunicion(tipo, cantidad);
+        }
+        foreach (Slot slot in slots)
+        {
+            if (cantidad > 0 && slot.EstaVacio)
+                cantidad = slot.AgregarMunicion(tipo, cantidad);
+        }
+        return cantidad;
+    }
 
+    // Saca munición de un tipo (por ejemplo, al recargar). Devuelve cuánta se sacó.
+    public int QuitarMunicion(TipoMunicion tipo, int cantidad)
+    {
+        int sacada = 0;
+        // De atrás hacia adelante, para vaciar primero los últimos slots
+        for (int i = slots.Length - 1; i >= 0 && sacada < cantidad; i--)
+        {
+            if (slots[i].TieneMunicion && slots[i].TipoMunicion == tipo)
+                sacada += slots[i].QuitarMunicion(cantidad - sacada);
+        }
+        return sacada;
+    }
 
+    // Cuánta munición de un tipo hay en total
+    public int ContarMunicion(TipoMunicion tipo)
+    {
+        int total = 0;
+        foreach (Slot slot in slots)
+        {
+            if (slot.TieneMunicion && slot.TipoMunicion == tipo)
+                total += slot.Cantidad;
+        }
+        return total;
+    }
 }

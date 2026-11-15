@@ -20,6 +20,8 @@ Notas sobre el pack:
 |---|---|---|---|
 | Arte conceptual (vista en primera persona, protagonista, enemigos y escena conceptual) | Equipo Goty Devs | Dibujos originales | `Assets/Arte/Concepto/` |
 | Degradado del menú | Equipo Goty Devs | Generado con código | `Assets/Arte/Interfaz/` |
+| Cuadrícula y marco de los slots del inventario (`inventario_grilla.png`, `inventario_marco_slot.png`) | Equipo Goty Devs | Generada con código. El diseño del inventario se inspira en Resident Evil 4 (Capcom); no usa imágenes de ese juego | `Assets/Arte/Interfaz/` |
+| Marca de bala (`marca_bala.png`) | Equipo Goty Devs | Generada con código | `Assets/Arte/Texturas/` |
 | Materiales de la escena del sótano | Equipo Goty Devs | Creados en Unity | `Assets/Arte/Materiales/` |
 | Música de ambiente del menú (`ambiente_menu.wav`) | Equipo Goty Devs | Generada con código (síntesis); **provisoria** | `Assets/Audio/Musica/` |
 | Sonidos de botones (`click.wav`, `hover.wav`) | Equipo Goty Devs | Generados con código (síntesis); **provisorios** | `Assets/Audio/Efectos/` |
