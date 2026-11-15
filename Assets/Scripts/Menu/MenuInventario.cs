@@ -9,9 +9,16 @@ using UnityEngine.UI;
 // Se agrega al objeto "Canvas_Inventario" de la escena de juego.
 public class MenuInventario : MonoBehaviour
 {
+
+    
     public GameObject panelInventario;
     public Inventario inventario;
     public Protagonista protagonista;
+
+    [Header("Audio")]
+    public AudioSource audioInventario;
+    public AudioClip sonidoAbrir;
+    public AudioClip sonidoCerrar;
 
     [Header("Slots (en el mismo orden que el inventario)")]
     public Text[] textosSlots;      // texto dentro de cada slot
@@ -103,6 +110,7 @@ public class MenuInventario : MonoBehaviour
         ActualizarTextos();
         Seleccionar(seleccionado);
         panelInventario.SetActive(true);
+        if (audioInventario != null && sonidoAbrir != null) audioInventario.PlayOneShot(sonidoAbrir);
         Time.timeScale = 0f;                       // detiene el juego
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
@@ -111,6 +119,7 @@ public class MenuInventario : MonoBehaviour
     void Cerrar()
     {
         EstaAbierto = false;
+        if (audioInventario != null && sonidoCerrar != null) audioInventario.PlayOneShot(sonidoCerrar);
         panelInventario.SetActive(false);
         Time.timeScale = 1f;                       // el juego sigue
         Cursor.lockState = CursorLockMode.Locked;
