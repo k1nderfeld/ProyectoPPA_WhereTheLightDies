@@ -12,7 +12,9 @@ public class SalidaNivel : MonoBehaviour
         Protagonista protagonista = otro.GetComponent<Protagonista>();
         if (protagonista == null) return; // solo cuenta el jugador
 
-        int enemigosVivos = FindObjectsByType<Enemigo>().Length;
+        int enemigosVivos = 0;
+        foreach (Enemigo enemigo in FindObjectsByType<Enemigo>())
+            if (!enemigo.EstaMuerto) enemigosVivos++; // los que están cayendo muertos no cuentan
         if (enemigosVivos > 0)
         {
             protagonista.MostrarMensaje("Aún quedan " + enemigosVivos + " enemigos en el sótano");

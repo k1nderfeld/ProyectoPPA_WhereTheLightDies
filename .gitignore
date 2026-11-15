@@ -118,3 +118,7 @@ InitTestScene*.unity*
 # para armar escenas; no se suben al repositorio.
 /Assets/Editor/
 /Assets/Editor.meta
+
+# Pack original del Asset Store (1,3 GB). Solo se sube la copia reducida en Assets/Arte/Modelos/Mutante
+/[Aa]ssets/MonsterMutant 7/
+/[Aa]ssets/MonsterMutant 7.meta

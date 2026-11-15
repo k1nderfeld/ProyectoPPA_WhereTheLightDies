@@ -35,6 +35,7 @@ public class Protagonista : MonoBehaviour
     public bool EstaCorriendo { get; private set; }
     public bool SeMueve { get; private set; }       // si está caminando o corriendo (lo usa AnimacionArma)
     public bool EstaMuerto { get; private set; }
+    public bool EstaCansado { get { return estaminaAgotada; } } // se le acabó la estamina (lo usa SonidosJugador)
     public float TiempoUltimoDanio { get; private set; } = -10f; // cuándo recibió el último golpe (lo usa EfectoDanio)
     public float SaludActual { get { return saludActual; } }
     public float SaludMaxima { get { return saludMaxima; } }
@@ -221,7 +222,13 @@ public class Protagonista : MonoBehaviour
     void Recoger()
     {
         if (RecogibleCercano == null) return;
-        if (!RecogibleCercano.Recoger(this)) MostrarMensaje("No hay espacio en el inventario");
+        if (!RecogibleCercano.Recoger(this))
+        {
+            MostrarMensaje("No hay espacio en el inventario");
+            return;
+        }
+        SonidosJugador sonidos = GetComponent<SonidosJugador>();
+        if (sonidos != null) sonidos.Recoger();
     }
 
     // Busca lo más cercano que se pueda recoger, dentro de la distancia permitida
