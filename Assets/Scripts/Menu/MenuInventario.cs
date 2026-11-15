@@ -70,6 +70,15 @@ public class MenuInventario : MonoBehaviour
         if (teclado.downArrowKey.wasPressedThisFrame || teclado.sKey.wasPressedThisFrame) MoverSeleccion(Columnas);
         if (teclado.upArrowKey.wasPressedThisFrame || teclado.wKey.wasPressedThisFrame) MoverSeleccion(-Columnas);
         if (teclado.enterKey.wasPressedThisFrame) EquiparSeleccionada();
+        if (teclado.qKey.wasPressedThisFrame) BotarSeleccionado();
+    }
+
+    // Bota lo que hay en el slot elegido (con la tecla Q): queda en el suelo frente al jugador
+    void BotarSeleccionado()
+    {
+        protagonista.BotarDelInventario(seleccionado);
+        ActualizarTextos();
+        Seleccionar(seleccionado);
     }
 
     // Clic en un slot: lo elige y, si tiene un arma, la equipa
@@ -176,15 +185,12 @@ public class MenuInventario : MonoBehaviour
                 string unidad = arma.tipoMunicion == TipoMunicion.Cargador ? " balas" : " cartuchos";
                 balas = arma.municionActual + " de " + arma.municionPorCarga + unidad;
             }
-            string estado = arma == protagonista.ArmaEquipada ? "Equipada" : "Clic para equipar";
-            return balas + "  ·  " + estado;
+            string estado = arma == protagonista.ArmaEquipada ? "Equipada" : "Clic: equipar";
+            return balas + "  ·  " + estado + "  ·  Q: botar";
         }
-        if (slot.Reservado) return "Lo ocupa un arma grande";
+        if (slot.Reservado) return "Lo ocupa un arma grande  ·  Q: botar";
         if (slot.TieneMunicion)
-        {
-            string uso = slot.TipoMunicion == TipoMunicion.Cargador ? "para armas de cargador" : "para armas de cartuchos";
-            return slot.Cantidad + " de " + Slot.Capacidad(slot.TipoMunicion) + "  ·  " + uso;
-        }
+            return slot.Cantidad + " de " + Slot.Capacidad(slot.TipoMunicion) + "  ·  Q: botar";
         return "Espacio libre";
     }
 }
