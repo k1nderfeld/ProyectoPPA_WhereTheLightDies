@@ -35,17 +35,27 @@ Proyecto de la asignatura **Programación Avanzada**, Universidad Católica del 
    El repositorio es privado: hay que iniciar sesión con una cuenta que sea colaboradora. También se puede clonar con GitHub Desktop.
 4. En Unity Hub pulsa **Add → Add project from disk** y selecciona la carpeta del repositorio.
 5. Abre el proyecto con el editor `6000.6.0f1`. La primera vez Unity genera la carpeta `Library`, que está ignorada por Git y puede tardar varios minutos.
-6. Abre la escena `Assets/Scenes/SampleScene.unity`. La escena conceptual del sótano se agregará en la siguiente actualización (por definir).
+6. Abre la escena `Assets/Escenas/MenuPrincipal.unity` y pulsa **Play**. El botón *Jugar* carga la escena conceptual del sótano (`Assets/Escenas/Sotano_Conceptual.unity`).
 
 ## Estructura del repositorio
 
 ```
-Assets/            Escenas, scripts, arte, audio y configuración del proyecto Unity
-Packages/          Paquetes de Unity (manifest.json)
-ProjectSettings/   Configuración del proyecto Unity
-README.md          Este archivo
-.gitignore         Archivos ignorados (plantilla de Unity)
+Assets/
+├── Arte/             Concepto, Interfaz y Materiales
+├── Audio/            Musica y Efectos
+├── Configuracion/    Ajustes de render (URP) y perfiles de efectos
+├── Editor/           Comandos del menú "Goty Devs" (solo locales; no se suben)
+├── Escenas/          Escenas del juego
+├── Scripts/          Código del juego (Menu, Sistemas, ...)
+└── Terceros/         Assets descargados (no se modifican)
+docs/                 Documentación del equipo
+Packages/             Paquetes de Unity (manifest.json)
+ProjectSettings/      Configuración del proyecto Unity
+README.md             Este archivo
+.gitignore            Archivos ignorados (plantilla de Unity)
 ```
+
+El detalle de cada carpeta, las reglas de nombres y cómo documentar el código están en [`docs/ESTRUCTURA_Y_CONVENCIONES.md`](docs/ESTRUCTURA_Y_CONVENCIONES.md).
 
 ## Flujo de trabajo
 
@@ -103,6 +113,8 @@ Mientras el `MAJOR` sea `0` el juego está en desarrollo inicial. `v0.1.0` corre
 
 ## Documentación
 
+- Estructura del proyecto y convenciones: [`docs/ESTRUCTURA_Y_CONVENCIONES.md`](docs/ESTRUCTURA_Y_CONVENCIONES.md)
+- Guía de scripts: [`docs/SCRIPTS.md`](docs/SCRIPTS.md)
 - Especificación de Requerimientos de Software (ERS): por definir
 - Tablero Kanban y Carta Gantt: por definir
 
