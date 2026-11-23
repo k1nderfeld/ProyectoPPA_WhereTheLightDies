@@ -174,6 +174,14 @@ public class Protagonista : MonoBehaviour
         }
     }
 
+    // Recupera salud (botiquines). Devuelve true si se curó algo (si ya tenía la salud llena, no).
+    public bool Curar(float cantidad)
+    {
+        if (EstaMuerto || saludActual >= saludMaxima) return false;
+        saludActual = Mathf.Min(saludActual + cantidad, saludMaxima);
+        return true;
+    }
+
     // Guarda una unidad de munición en el inventario (RF-10). Devuelve true si cupo.
     public bool RecogerMunicion(TipoMunicion tipo)
     {
