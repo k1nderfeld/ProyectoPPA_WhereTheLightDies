@@ -22,6 +22,9 @@ public class GestorOleadas : MonoBehaviour
     public float distanciaMinimaJugador = 6f; // no aparecen pegados al jugador
 
     public Protagonista protagonista;
+    public bool esperarActivacion = false;    // si es true, empieza cuando el jugador cruza una ZonaInicioOleadas
+
+    bool activadas;
 
     public bool Terminado { get; private set; }
     public int OleadaActual { get; private set; }
@@ -31,6 +34,15 @@ public class GestorOleadas : MonoBehaviour
     void Start()
     {
         if (protagonista == null) protagonista = FindAnyObjectByType<Protagonista>();
+        if (!esperarActivacion)
+            Activar();
+    }
+
+    // Empieza las oleadas (lo llama ZonaInicioOleadas, o Start si no hay que esperar)
+    public void Activar()
+    {
+        if (activadas) return;
+        activadas = true;
         StartCoroutine(CicloDeOleadas());
     }
 
