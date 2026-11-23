@@ -88,6 +88,7 @@ public abstract class Arma : MonoBehaviour, IRecogible
         if (UsaMunicion) municionActual--;
         Sonar(sonidoAtaque);
         Retroceso();
+        EfectosCamara.Sacudir(UsaMunicion ? 0.03f : 0.015f); // la cámara tiembla un poco al disparar
 
         if (fogonazo != null)
         {
@@ -103,7 +104,10 @@ public abstract class Arma : MonoBehaviour, IRecogible
             {
                 Enemigo enemigo = golpe.collider.GetComponentInParent<Enemigo>();
                 if (enemigo != null)
+                {
                     enemigo.RecibirDanio(danioPorRayo);
+                    Sangre.Impacto(golpe.point, golpe.normal); // salpica sangre donde pegó
+                }
                 else if (UsaMunicion && !golpe.collider.isTrigger)
                     DejarMarca(golpe); // las balas marcan paredes y suelo; la palanca no
 

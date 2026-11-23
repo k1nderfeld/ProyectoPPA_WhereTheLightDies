@@ -180,6 +180,8 @@ public abstract class Enemigo : MonoBehaviour
     {
         EstaMuerto = true;
         SoltarObjeto();
+        Sangre.Muerte(transform.position);   // estallido de sangre y charco
+        EfectosCamara.Congelar(0.06f);       // pausa mínima: cada muerte se siente
         if (sonidos != null)
         {
             sonidos.Muerte();

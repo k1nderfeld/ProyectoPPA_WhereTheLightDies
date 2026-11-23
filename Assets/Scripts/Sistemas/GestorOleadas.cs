@@ -41,6 +41,7 @@ public class GestorOleadas : MonoBehaviour
         for (int oleada = 1; oleada <= cantidadOleadas; oleada++)
         {
             OleadaActual = oleada;
+            MusicaFondo.EnCombate = true;
             protagonista.MostrarMensaje("Oleada " + oleada + " de " + cantidadOleadas);
 
             int total = enemigosPrimeraOleada + enemigosExtraPorOleada * (oleada - 1);
@@ -64,6 +65,7 @@ public class GestorOleadas : MonoBehaviour
                 yield return new WaitForSeconds(0.5f);
             }
 
+            MusicaFondo.EnCombate = false;
             if (oleada < cantidadOleadas)
             {
                 protagonista.MostrarMensaje("Oleada superada");

@@ -166,6 +166,7 @@ public class Protagonista : MonoBehaviour
 
         saludActual -= danio;
         TiempoUltimoDanio = Time.time;
+        EfectosCamara.Sacudir(0.15f); // el golpe sacude la vista
         if (saludActual <= 0f)
         {
             saludActual = 0f;
