@@ -166,12 +166,21 @@ public class Protagonista : MonoBehaviour
 
         saludActual -= danio;
         TiempoUltimoDanio = Time.time;
+        EfectosCamara.Sacudir(0.15f); // el golpe sacude la vista
         if (saludActual <= 0f)
         {
             saludActual = 0f;
             EstaMuerto = true;
             Debug.Log("El protagonista murió");
         }
+    }
+
+    // Recupera salud (botiquines). Devuelve true si se curó algo (si ya tenía la salud llena, no).
+    public bool Curar(float cantidad)
+    {
+        if (EstaMuerto || saludActual >= saludMaxima) return false;
+        saludActual = Mathf.Min(saludActual + cantidad, saludMaxima);
+        return true;
     }
 
     // Guarda una unidad de munición en el inventario (RF-10). Devuelve true si cupo.

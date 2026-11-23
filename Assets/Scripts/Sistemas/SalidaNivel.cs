@@ -6,11 +6,18 @@ using UnityEngine;
 public class SalidaNivel : MonoBehaviour
 {
     public PantallaFinal pantallaFinal;
+    public GestorOleadas oleadas;   // si hay oleadas, la salida se abre al terminarlas
 
     void OnTriggerEnter(Collider otro)
     {
         Protagonista protagonista = otro.GetComponent<Protagonista>();
         if (protagonista == null) return; // solo cuenta el jugador
+
+        if (oleadas != null && !oleadas.Terminado)
+        {
+            protagonista.MostrarMensaje("La salida está bloqueada. Sobrevive a las oleadas");
+            return;
+        }
 
         int enemigosVivos = 0;
         foreach (Enemigo enemigo in FindObjectsByType<Enemigo>())

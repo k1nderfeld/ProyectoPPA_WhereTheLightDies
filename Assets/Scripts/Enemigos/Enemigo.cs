@@ -17,6 +17,10 @@ public abstract class Enemigo : MonoBehaviour
     [SerializeField] protected float distanciaOidoCorriendo = 8f; // si corre, lo oye desde más lejos
     [SerializeField] protected Color colorAtaque = Color.red;  // se pone de este color al golpear
 
+    [Header("Drops al morir")]
+    [SerializeField] [Range(0f, 1f)] private float probMunicion = 0.35f;  // probabilidad de soltar munición
+    [SerializeField] [Range(0f, 1f)] private float probCuracion = 0.15f;  // probabilidad de soltar un botiquín
+
     public bool EstaMuerto { get; private set; }
     protected bool VeAlJugadorAhora { get; private set; }       // si lo ve en este cuadro
     protected Vector3 UltimaPosicionVista { get; private set; } // donde lo vio por última vez
@@ -31,6 +35,9 @@ public abstract class Enemigo : MonoBehaviour
     float finDestello;
     SonidosEnemigo sonidos;        // puede no tener (entonces es un enemigo mudo)
     bool persiguiendoAntes;
+    float proximaRevision;         // cuándo vuelve a lanzar los rayos de visión
+    bool resultadoVision;          // lo que vio en la última revisión
+    bool cazador;                  // si es true, siempre sabe dónde está el jugador (enemigos de oleada)
 
     protected virtual void Start()
     {
@@ -63,8 +70,21 @@ public abstract class Enemigo : MonoBehaviour
 
         // Si lo ve, guarda el momento. Sigue persiguiendo un rato aunque lo pierda de vista
         // (así no se "olvida" del jugador cuando un rayo deja de tocarlo por un instante).
-        VeAlJugadorAhora = !protagonista.EstaMuerto && (VeAlJugador() || OyeAlJugador());
+        // Optimización: los 19 rayos se lanzan solo cada 0,1 segundos (no en cada cuadro).
+        // Para el jugador no se nota, y con muchos enemigos ahorra bastante.
+        if (Time.time >= proximaRevision)
+        {
+            proximaRevision = Time.time + 0.1f;
+            resultadoVision = VeAlJugador() || OyeAlJugador();
+        }
+        VeAlJugadorAhora = !protagonista.EstaMuerto && resultadoVision;
         if (VeAlJugadorAhora)
+        {
+            ultimaVezVisto = Time.time;
+            UltimaPosicionVista = jugador.position;
+        }
+        // Los enemigos de las oleadas no patrullan: van directo a buscar al jugador
+        if (cazador)
         {
             ultimaVezVisto = Time.time;
             UltimaPosicionVista = jugador.position;
@@ -136,9 +156,32 @@ public abstract class Enemigo : MonoBehaviour
             animador.SetTrigger("Golpeado");
     }
 
+    // Lo llama el GestorOleadas al crear un enemigo: sale directo a cazar al jugador
+    public void Alertar()
+    {
+        cazador = true;
+    }
+
+    // Al morir puede soltar munición o un botiquín (así el jugador sigue peleando)
+    void SoltarObjeto()
+    {
+        Vector3 suelo = transform.position;
+        float azar = Random.value;
+        if (azar < probCuracion)
+            Curacion.Crear(suelo);
+        else if (azar < probCuracion + probMunicion)
+        {
+            TipoMunicion tipo = Random.value < 0.6f ? TipoMunicion.Cargador : TipoMunicion.Cartucho;
+            Municion.CrearCaja(tipo, Random.Range(1, 3), suelo);
+        }
+    }
+
     protected virtual void Morir()
     {
         EstaMuerto = true;
+        SoltarObjeto();
+        Sangre.Muerte(transform.position);   // estallido de sangre y charco
+        EfectosCamara.Congelar(0.06f);       // pausa mínima: cada muerte se siente
         if (sonidos != null)
         {
             sonidos.Muerte();
@@ -190,7 +233,6 @@ public abstract class Enemigo : MonoBehaviour
         {
             float angulo = -45f + i * 5f;
             Vector3 direccion = Quaternion.Euler(0f, angulo, 0f) * transform.forward;
-            Debug.DrawRay(transform.position, direccion * rangoDeteccion, Color.red);
 
             RaycastHit golpe;
             if (Physics.Raycast(transform.position, direccion, out golpe, rangoDeteccion, ~0, QueryTriggerInteraction.Ignore)

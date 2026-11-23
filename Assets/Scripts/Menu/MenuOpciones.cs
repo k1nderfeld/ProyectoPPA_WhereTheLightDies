@@ -11,6 +11,7 @@ public class MenuOpciones : MonoBehaviour
     public Slider sliderEfectos;
     public Slider sliderSensibilidad;
     public Toggle togglePantallaCompleta;
+    public Dropdown dropdownCalidad;   // opciones: Baja, Media, Alta (si no se asigna, no pasa nada)
 
     // Textos que muestran el valor junto a cada slider (por ejemplo "80%")
     public Text textoGeneral;
@@ -28,6 +29,7 @@ public class MenuOpciones : MonoBehaviour
         sliderEfectos.value = Ajustes.VolumenEfectos;
         sliderSensibilidad.value = Ajustes.Sensibilidad;
         togglePantallaCompleta.isOn = Ajustes.PantallaCompleta;
+        if (dropdownCalidad != null) dropdownCalidad.value = Ajustes.Calidad;
         ActualizarTextos();
 
         // ...y recién después se escuchan los cambios del jugador.
@@ -36,6 +38,13 @@ public class MenuOpciones : MonoBehaviour
         sliderEfectos.onValueChanged.AddListener(CambioEfectos);
         sliderSensibilidad.onValueChanged.AddListener(CambioSensibilidad);
         togglePantallaCompleta.onValueChanged.AddListener(CambioPantallaCompleta);
+        if (dropdownCalidad != null) dropdownCalidad.onValueChanged.AddListener(CambioCalidad);
+    }
+
+    void CambioCalidad(int valor)
+    {
+        Ajustes.Calidad = valor;
+        Ajustes.AplicarCalidad();
     }
 
     void CambioGeneral(float valor)
